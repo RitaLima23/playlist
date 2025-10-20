@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlists de Desenhos do YouTube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .add-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .add-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group small {
+            display: block;
+            color: #888;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .submit-button:hover {
+            opacity: 0.9;
+        }
+
+        .my-playlists {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .my-playlists h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .playlist-item {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .playlist-item:hover {
+            background: #ebebeb;
+        }
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .playlist-title {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .playlist-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .playlist-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+
+        .playlist-link:hover {
+            text-decoration: underline;
+        }
+
+        .playlist-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .watch-button {
+            flex: 1;
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .watch-button:hover {
+            background: #cc0000;
+        }
+
+        .remove-button {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.3s ease;
+        }
+
+        .remove-button:hover {
+            background: #d32f2f;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .playlist-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Playlists de Desenhos</h1>
+        <p class="subtitle">Adicione e organize suas playlists favoritas do YouTube</p>
+
+        <div class="add-section">
+            <h2>➕ Adicionar Nova Playlist</h2>
+            <div class="form-group">
+                <label for="playlistUrl">Link da Playlist do YouTube *</label>
+                <input 
+                    type="text" 
+                    id="playlistUrl" 
+                    placeholder="https://www.youtube.com/playlist?list=..."
+                >
+                <small>Cole o link completo da playlist do YouTube</small>
+            </div>
+
+            <div class="form-group">
+                <label for="playlistTitle">Título da Playlist *</label>
+                <input 
+                    type="text" 
+                    id="playlistTitle" 
+                    placeholder="Ex: Clássicos Disney"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="playlistDescription">Descrição (opcional)</label>
+                <textarea 
+                    id="playlistDescription" 
+                    placeholder="Descreva o conteúdo desta playlist..."
+                ></textarea>
+            </div>
+
+            <button class="submit-button" onclick="addPlaylist()">Adicionar Playlist</button>
+            <div id="message" class="message"></div>
+        </div>
+
+        <div class="my-playlists">
+            <h2>📺 Minhas Playlists (<span id="count">0</span>)</h2>
+            <div id="playlistsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let playlists = [];
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            msg.style.display = 'block';
+            
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        function addPlaylist() {
+            const url = document.getElementById('playlistUrl').value.trim();
+            const title = document.getElementById('playlistTitle').value.trim();
+            const description = document.getElementById('playlistDescription').value.trim();
+
+            console.log('Tentando adicionar:', {url, title, description});
+
+            if (!url) {
+                showMessage('Por favor, insira o link da playlist!', 'error');
+                return;
+            }
+
+            if (!title) {
+                showMessage('Por favor, insira o título da playlist!', 'error');
+                return;
+            }
+
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                showMessage('Por favor, insira um link válido do YouTube!', 'error');
+                return;
+            }
+
+            const exists = playlists.find(p => p.url === url);
+            if (exists) {
+                showMessage('Esta playlist já foi adicionada!', 'error');
+                return;
+            }
+
+            playlists.push({
+                url: url,
+                title: title,
+                description: description,
+                id: Date.now()
+            });
+
+            console.log('Playlist adicionada! Total:', playlists.length);
+
+            document.getElementById('playlistUrl').value = '';
+            document.getElementById('playlistTitle').value = '';
+            document.getElementById('playlistDescription').value = '';
+
+            renderPlaylists();
+            showMessage('Playlist adicionada com sucesso!', 'success');
+        }
+
+        function removePlaylist(id) {
+            console.log('Removendo playlist com ID:', id);
+            
+            const sizeBefore = playlists.length;
+            playlists = playlists.filter(p => p.id !== id);
+            console.log('Removeu:', sizeBefore - playlists.length, 'playlist(s)');
+            
+            renderPlaylists();
+            showMessage('Playlist removida com sucesso!', 'success');
+        }
+
+        function openPlaylist(url) {
+            window.open(url, '_blank');
+        }
+
+        function renderPlaylists() {
+            const container = document.getElementById('playlistsContainer');
+            const countEl = document.getElementById('count');
+            
+            countEl.textContent = playlists.length;
+            
+            if (playlists.length === 0) {
+                container.innerHTML = '<div class="empty-message">Você ainda não adicionou nenhuma playlist. Use o formulário acima para adicionar!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            playlists.forEach(playlist => {
+                const item = document.createElement('div');
+                item.className = 'playlist-item';
+                
+                const title = document.createElement('div');
+                title.className = 'playlist-title';
+                title.textContent = playlist.title;
+                item.appendChild(title);
+                
+                if (playlist.description) {
+                    const desc = document.createElement('div');
+                    desc.className = 'playlist-description';
+                    desc.textContent = playlist.description;
+                    item.appendChild(desc);
+                }
+                
+                const link = document.createElement('a');
+                link.href = playlist.url;
+                link.target = '_blank';
+                link.className = 'playlist-link';
+                link.textContent = '🔗 ' + playlist.url;
+                item.appendChild(link);
+                
+                const actions = document.createElement('div');
+                actions.className = 'playlist-actions';
+                
+                const watchBtn = document.createElement('button');
+                watchBtn.className = 'watch-button';
+                watchBtn.textContent = '▶️ Assistir no YouTube';
+                watchBtn.onclick = function() {
+                    window.open(playlist.url, '_blank');
+                };
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-button';
+                removeBtn.textContent = '🗑️ Remover';
+                removeBtn.onclick = function() {
+                    removePlaylist(playlist.id);
+                };
+                
+                actions.appendChild(watchBtn);
+                actions.appendChild(removeBtn);
+                item.appendChild(actions);
+                
+                container.appendChild(item);
+            });
+
+            console.log('Playlists renderizadas:', playlists.length);
+        }
+
+        renderPlaylists();
+    </script>
+</body>
+</html>
